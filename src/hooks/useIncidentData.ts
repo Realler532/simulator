@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Incident, NetworkTraffic, SystemStatus, Alert } from '../types/incident';
-import { generateRandomIncident, generateNetworkTraffic, generateSystemStatus, generateAlert } from '../utils/dataSimulator';
+import { Incident, NetworkTraffic, SystemStatus, Alert, ThreatDetection, AnomalyDetection } from '../types/incident';
+import { generateRandomIncident, generateNetworkTraffic, generateSystemStatus, generateAlert, generateThreatDetection, generateAnomalyDetection } from '../utils/dataSimulator';
 
 export function useIncidentData() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [networkTraffic, setNetworkTraffic] = useState<NetworkTraffic[]>([]);
   const [systemStatus, setSystemStatus] = useState<SystemStatus[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [threatDetections, setThreatDetections] = useState<ThreatDetection[]>([]);
+  const [anomalies, setAnomalies] = useState<AnomalyDetection[]>([]);
   const [isMonitoring, setIsMonitoring] = useState(true);
 
   // Initialize data
@@ -14,10 +16,14 @@ export function useIncidentData() {
     const initialIncidents = Array.from({ length: 10 }, () => generateRandomIncident());
     const initialTraffic = Array.from({ length: 50 }, () => generateNetworkTraffic());
     const initialStatus = generateSystemStatus();
+    const initialThreats = Array.from({ length: 15 }, () => generateThreatDetection());
+    const initialAnomalies = Array.from({ length: 8 }, () => generateAnomalyDetection());
     
     setIncidents(initialIncidents);
     setNetworkTraffic(initialTraffic);
     setSystemStatus(initialStatus);
+    setThreatDetections(initialThreats);
+    setAnomalies(initialAnomalies);
   }, []);
 
   // Simulate real-time incident generation
@@ -96,6 +102,8 @@ export function useIncidentData() {
     networkTraffic,
     systemStatus,
     alerts,
+    threatDetections,
+    anomalies,
     isMonitoring,
     acknowledgeAlert,
     resolveIncident,

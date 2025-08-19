@@ -84,6 +84,8 @@ export function Dashboard() {
         return hasPermission('view_systems') ? <SystemStatus systems={systemStatus} /> : null;
       case 'incidents':
         return hasPermission('view_incidents') ? <IncidentList incidents={incidents} /> : null;
+      case 'threats':
+        return hasPermission('view_incidents') ? <ThreatDetectionPanel threatDetections={threatDetections} anomalies={anomalies} /> : null;
       default:
         return null;
     }

@@ -34,3 +34,28 @@ export interface Alert {
   type: 'info' | 'warning' | 'error' | 'critical';
   acknowledged: boolean;
 }
+
+export interface ThreatDetection {
+  id: string;
+  timestamp: Date;
+  threatType: 'behavioral_anomaly' | 'signature_match' | 'ml_detection' | 'correlation_rule';
+  description: string;
+  confidence: number;
+  riskScore: number;
+  mitreTactics: string[];
+  indicators: string[];
+  source: string;
+  target: string;
+}
+
+export interface AnomalyDetection {
+  id: string;
+  timestamp: Date;
+  anomalyType: 'traffic_spike' | 'unusual_login' | 'data_exfiltration' | 'privilege_escalation';
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  source: string;
+  baseline: string;
+  observed: string;
+  deviation: number;
+}

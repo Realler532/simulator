@@ -44,6 +44,12 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
       label: 'Recent Incidents',
       icon: Shield,
       description: 'Security incident tracking'
+    },
+    {
+      id: 'threats',
+      label: 'Threat Detection',
+      icon: Brain,
+      description: 'Advanced threat analysis'
     }
   ];
 
