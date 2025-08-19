@@ -5,7 +5,8 @@ import {
   Bell, 
   Server, 
   Shield, 
-  ChevronRight 
+  ChevronRight,
+  Brain
 } from 'lucide-react';
 
 interface SidebarProps {
