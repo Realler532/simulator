@@ -59,14 +59,14 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
           </h2>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-            <span className="text-red-400 text-sm">Active Scanning</span>
+            <span className="text-red-400 text-sm font-medium">Live Detection</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gray-900 rounded-lg p-4">
             <div className="text-red-400 text-2xl font-bold">{highConfidenceThreats.length}</div>
-            <div className="text-gray-400 text-sm">High Confidence</div>
+            <div className="text-gray-400 text-sm">High Confidence (85%+)</div>
           </div>
           <div className="bg-gray-900 rounded-lg p-4">
             <div className="text-orange-400 text-2xl font-bold">
@@ -88,17 +88,37 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
 
         {/* Recent Threat Detections */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-white">Recent Threat Detections</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">Live Threat Detections</h3>
+            <div className="text-xs text-gray-400">
+              Last updated: {new Date().toLocaleTimeString()}
+            </div>
+          </div>
           <div className="space-y-2 max-h-60 overflow-y-auto">
-            {threatDetections.slice(0, 8).map((threat) => (
-              <div key={threat.id} className="bg-gray-900 rounded-lg p-4">
+            {threatDetections.slice(0, 10).map((threat, index) => (
+              <div 
+                key={threat.id} 
+                className={`bg-gray-900 rounded-lg p-4 border-l-4 ${
+                  threat.confidence > 90 ? 'border-red-500' :
+                  threat.confidence > 80 ? 'border-orange-500' :
+                  threat.confidence > 70 ? 'border-yellow-500' :
+                  'border-blue-500'
+                } ${index < 3 ? 'animate-pulse' : ''}`}
+              >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-3">
                     {getThreatTypeIcon(threat.threatType)}
                     <div>
-                      <div className="text-white text-sm font-medium">{threat.description}</div>
+                      <div className="text-white text-sm font-medium">
+                        {threat.description}
+                        {index < 3 && (
+                          <span className="ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded-full animate-pulse">
+                            NEW
+                          </span>
+                        )}
+                      </div>
                       <div className="text-gray-400 text-xs mt-1">
-                        {threat.timestamp.toLocaleString()}
+                        {threat.timestamp.toLocaleString()} • Source: {threat.source}
                       </div>
                     </div>
                   </div>
@@ -106,7 +126,9 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
                     <div className={`text-sm font-medium ${getConfidenceColor(threat.confidence)}`}>
                       {threat.confidence}% confidence
                     </div>
-                    <div className="text-xs text-gray-400">Risk: {threat.riskScore}</div>
+                    <div className="text-xs text-gray-400">
+                      Risk: {threat.riskScore}/10
+                    </div>
                   </div>
                 </div>
                 
@@ -114,7 +136,7 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
                   {threat.mitreTactics.map((tactic, index) => (
                     <span
                       key={index}
-                      className="text-xs px-2 py-1 bg-red-900/50 text-red-300 rounded"
+                      className="text-xs px-2 py-1 bg-red-900/50 text-red-300 rounded border border-red-700/30"
                     >
                       {tactic}
                     </span>
@@ -128,7 +150,7 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
                       {threat.indicators.map((indicator, index) => (
                         <span
                           key={index}
-                          className="text-xs px-2 py-1 bg-blue-900/50 text-blue-300 rounded"
+                          className="text-xs px-2 py-1 bg-blue-900/50 text-blue-300 rounded border border-blue-700/30"
                         >
                           {indicator}
                         </span>
@@ -147,13 +169,20 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white flex items-center">
             <TrendingUp className="h-6 w-6 text-purple-400 mr-2" />
-            Anomaly Detection
+            Behavioral Anomaly Detection
           </h2>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+            <span className="text-purple-400 text-sm font-medium">AI Analysis</span>
+          </div>
         </div>
 
         <div className="space-y-3">
-          {anomalies.slice(0, 6).map((anomaly) => (
-            <div key={anomaly.id} className="bg-gray-900 rounded-lg p-4">
+          {anomalies.slice(0, 8).map((anomaly, index) => (
+            <div 
+              key={anomaly.id} 
+              className={`bg-gray-900 rounded-lg p-4 ${index < 2 ? 'animate-pulse border border-purple-700/50' : ''}`}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
@@ -163,6 +192,11 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
                     <span className="text-gray-400 text-xs">
                       {anomaly.anomalyType.replace('_', ' ').toUpperCase()}
                     </span>
+                    {index < 2 && (
+                      <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full animate-pulse">
+                        LIVE
+                      </span>
+                    )}
                   </div>
                   <p className="text-white text-sm font-medium">{anomaly.description}</p>
                   <div className="flex items-center space-x-4 mt-2 text-xs text-gray-400">
@@ -174,7 +208,7 @@ export function ThreatDetectionPanel({ threatDetections, anomalies }: ThreatDete
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium text-red-400">
-                    {anomaly.deviation}% deviation
+                    +{anomaly.deviation}% deviation
                   </div>
                   <div className="text-xs text-gray-400">
                     {anomaly.timestamp.toLocaleTimeString()}
