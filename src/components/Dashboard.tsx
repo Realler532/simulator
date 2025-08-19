@@ -1,5 +1,7 @@
 import React from 'react';
+import { useState } from 'react';
 import { Shield, Activity, AlertTriangle, Network, Database, Users } from 'lucide-react';
+import { Sidebar } from './Sidebar';
 import { ThreatMap } from './ThreatMap';
 import { IncidentList } from './IncidentList';
 import { NetworkMonitor } from './NetworkMonitor';
@@ -12,6 +14,7 @@ import { useAuth } from '../hooks/useAuth';
 export function Dashboard() {
   const { incidents, networkTraffic, systemStatus, alerts, isMonitoring, toggleMonitoring } = useIncidentData();
   const { user, hasPermission } = useAuth();
+  const [activeView, setActiveView] = useState('home');
 
   const criticalIncidents = incidents.filter(i => i.severity === 'critical').length;
   const highIncidents = incidents.filter(i => i.severity === 'high').length;
@@ -49,22 +52,67 @@ export function Dashboard() {
     }
   ];
 
+  const renderMainContent = () => {
+    switch (activeView) {
+      case 'home':
+        return (
+          <div className="space-y-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm font-medium">{stat.title}</p>
+                      <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                    </div>
+                    <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                      <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {hasPermission('view_incidents') && <ThreatMap incidents={incidents} />}
+          </div>
+        );
+      case 'network':
+        return hasPermission('view_systems') ? <NetworkMonitor networkTraffic={networkTraffic} /> : null;
+      case 'alerts':
+        return hasPermission('view_alerts') ? <AlertPanel alerts={alerts} /> : null;
+      case 'systems':
+        return hasPermission('view_systems') ? <SystemStatus systems={systemStatus} /> : null;
+      case 'incidents':
+        return hasPermission('view_incidents') ? <IncidentList incidents={incidents} /> : null;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white flex">
+      <Sidebar activeView={activeView} onViewChange={setActiveView} />
+      
+      <div className="flex-1 flex flex-col">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-blue-400" />
+            <div className="flex items-center space-x-3">
             <div>
-              <h1 className="text-2xl font-bold text-white">CyberGuard SOC</h1>
+                <h1 className="text-2xl font-bold text-white">
+                  {activeView === 'home' && 'Global Threat Map'}
+                  {activeView === 'network' && 'Network Traffic Monitor'}
+                  {activeView === 'alerts' && 'Active Alerts'}
+                  {activeView === 'systems' && 'System Status'}
+                  {activeView === 'incidents' && 'Recent Incidents'}
+                </h1>
               {user && (
                 <p className="text-sm text-gray-400">
                   Welcome back, {user.firstName}
                 </p>
               )}
             </div>
-          </div>
+            </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className={`w-3 h-3 rounded-full ${isMonitoring ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
@@ -87,42 +135,14 @@ export function Dashboard() {
             <UserProfile />
           </div>
         </div>
-      </header>
+        </header>
 
-      {/* Stats Grid */}
-      <div className="px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm font-medium">{stat.title}</p>
-                  <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                </div>
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Left Column - Threat Map and Network Monitor */}
-          <div className="xl:col-span-2 space-y-6">
-            {hasPermission('view_incidents') && <ThreatMap incidents={incidents} />}
-            {hasPermission('view_systems') && <NetworkMonitor networkTraffic={networkTraffic} />}
-          </div>
-
-          {/* Right Column - Alerts, System Status, and Incidents */}
-          <div className="space-y-6">
-            {hasPermission('view_alerts') && <AlertPanel alerts={alerts} />}
-            {hasPermission('view_systems') && <SystemStatus systems={systemStatus} />}
-            {hasPermission('view_incidents') && <IncidentList incidents={incidents.slice(0, 5)} />}
-          </div>
-        </div>
+        {/* Main Content */}
+        <main className="flex-1 p-6 overflow-auto">
+          {renderMainContent()}
+        </main>
       </div>
+        </div>
     </div>
   );
 }

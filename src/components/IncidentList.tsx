@@ -112,6 +112,14 @@ export function IncidentList({ incidents }: IncidentListProps) {
           ))
         )}
       </div>
+      
+      {incidents.length > 10 && (
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-400">
+            Showing latest {Math.min(incidents.length, 50)} incidents
+          </p>
+        </div>
+      )}
     </div>
   );
 }
