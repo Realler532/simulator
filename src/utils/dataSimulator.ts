@@ -177,12 +177,13 @@ export function generateAnomalyDetection(): AnomalyDetection {
     unusual_login: 'Business hours only',
     data_exfiltration: '50MB/hour',
     privilege_escalation: '0 attempts/hour'
+  };
+  
   const observed = {
     traffic_spike: `${(1.2 * (1 + deviation / 100)).toFixed(1)}GB/hour`,
     unusual_login: 'Off-hours access',
     data_exfiltration: `${(50 * (1 + deviation / 100)).toFixed(0)}MB/hour`,
     privilege_escalation: `${Math.floor(deviation / 100)} attempts/hour`
-  };
   };
   return {
     id: `ANO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
