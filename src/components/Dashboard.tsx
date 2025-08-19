@@ -142,7 +142,6 @@ export function Dashboard() {
           {renderMainContent()}
         </main>
       </div>
-        </div>
     </div>
   );
 }
