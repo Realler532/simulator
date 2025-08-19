@@ -127,34 +127,72 @@ export function generateAlert(): Alert {
 
 export function generateThreatDetection(): ThreatDetection {
   const threatType = threatTypes[Math.floor(Math.random() * threatTypes.length)];
-  const confidence = Math.floor(Math.random() * 40) + 60; // 60-100%
+  const confidence = Math.floor(Math.random() * 35) + 65; // 65-100%
   const riskScore = Math.floor(Math.random() * 10) + 1; // 1-10
   
   const descriptions = {
-    behavioral_anomaly: 'Unusual user behavior pattern detected',
-    signature_match: 'Known malware signature identified',
-    ml_detection: 'Machine learning model flagged suspicious activity',
-    correlation_rule: 'Multiple security events correlated to indicate threat'
+    behavioral_anomaly: [
+      'Unusual user behavior pattern detected - abnormal file access',
+      'Suspicious login patterns from user account',
+      'Abnormal data access outside business hours',
+      'User accessing unusual network resources'
+    ],
+    signature_match: [
+      'Known malware signature identified in network traffic',
+      'Trojan.Win32.Agent detected in email attachment',
+      'Ransomware signature match in file system',
+      'Known C2 server communication pattern detected'
+    ],
+    ml_detection: [
+      'Machine learning model flagged suspicious network activity',
+      'AI detected potential data exfiltration attempt',
+      'ML algorithm identified anomalous process behavior',
+      'Neural network detected potential insider threat'
+    ],
+    correlation_rule: [
+      'Multiple failed login attempts followed by successful access',
+      'Privilege escalation after suspicious file execution',
+      'Network scanning followed by lateral movement attempt',
+      'Data access spike correlated with external communication'
+    ]
   };
 
-  const indicators = [
-    'Suspicious file hash',
-    'Unusual network connection',
-    'Privilege escalation attempt',
-    'Abnormal data access pattern',
-    'Suspicious process execution',
-    'Unauthorized API calls'
-  ];
+  const indicatorsByType = {
+    behavioral_anomaly: [
+      'Off-hours access pattern',
+      'Unusual file access volume',
+      'Abnormal network usage',
+      'Suspicious user agent string'
+    ],
+    signature_match: [
+      'MD5: a1b2c3d4e5f6789012345678901234ab',
+      'Suspicious registry modification',
+      'Known malicious IP: 198.51.100.42',
+      'C2 domain: malicious-site.com'
+    ],
+    ml_detection: [
+      'Anomaly score: 0.95',
+      'Behavioral deviation: 85%',
+      'Process entropy: High',
+      'Network pattern anomaly'
+    ],
+    correlation_rule: [
+      'Event correlation ID: COR-2024-001',
+      'Multiple event sources',
+      'Time window: 15 minutes',
+      'Confidence threshold exceeded'
+    ]
+  };
 
   return {
     id: `THR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    timestamp: new Date(Date.now() - Math.random() * 3600000), // Last hour
+    timestamp: new Date(Date.now() - Math.random() * 1800000), // Last 30 minutes
     threatType,
-    description: descriptions[threatType],
+    description: descriptions[threatType][Math.floor(Math.random() * descriptions[threatType].length)],
     confidence,
     riskScore,
     mitreTactics: mitreTactics.slice(0, Math.floor(Math.random() * 3) + 1),
-    indicators: indicators.slice(0, Math.floor(Math.random() * 3) + 1),
+    indicators: indicatorsByType[threatType].slice(0, Math.floor(Math.random() * 2) + 1),
     source: sampleSources[Math.floor(Math.random() * sampleSources.length)],
     target: sampleTargets[Math.floor(Math.random() * sampleTargets.length)]
   };
@@ -163,13 +201,33 @@ export function generateThreatDetection(): ThreatDetection {
 export function generateAnomalyDetection(): AnomalyDetection {
   const anomalyType = anomalyTypes[Math.floor(Math.random() * anomalyTypes.length)];
   const severity = severityLevels[Math.floor(Math.random() * severityLevels.length)];
-  const deviation = Math.floor(Math.random() * 500) + 50; // 50-550% deviation
+  const deviation = Math.floor(Math.random() * 400) + 100; // 100-500% deviation
   
   const descriptions = {
-    traffic_spike: 'Unusual increase in network traffic detected',
-    unusual_login: 'Login attempt from unusual location or time',
-    data_exfiltration: 'Potential data exfiltration activity detected',
-    privilege_escalation: 'Suspicious privilege escalation attempt'
+    traffic_spike: [
+      'Unusual increase in network traffic detected from internal host',
+      'Abnormal bandwidth consumption detected',
+      'Suspicious data transfer volume spike',
+      'Network traffic anomaly - potential DDoS preparation'
+    ],
+    unusual_login: [
+      'Login attempt from unusual geographic location',
+      'Off-hours access from administrative account',
+      'Multiple failed logins followed by successful access',
+      'Login from previously unseen device'
+    ],
+    data_exfiltration: [
+      'Potential data exfiltration activity detected',
+      'Large file transfer to external destination',
+      'Suspicious database query patterns',
+      'Abnormal data access volume from user account'
+    ],
+    privilege_escalation: [
+      'Suspicious privilege escalation attempt detected',
+      'Unauthorized administrative command execution',
+      'Service account privilege abuse detected',
+      'Potential lateral movement via privilege escalation'
+    ]
   };
 
   const baselines = {
@@ -187,9 +245,9 @@ export function generateAnomalyDetection(): AnomalyDetection {
   };
   return {
     id: `ANO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    timestamp: new Date(Date.now() - Math.random() * 1800000), // Last 30 minutes
+    timestamp: new Date(Date.now() - Math.random() * 900000), // Last 15 minutes
     anomalyType,
-    description: descriptions[anomalyType],
+    description: descriptions[anomalyType][Math.floor(Math.random() * descriptions[anomalyType].length)],
     severity,
     source: sampleSources[Math.floor(Math.random() * sampleSources.length)],
     baseline: baselines[anomalyType],

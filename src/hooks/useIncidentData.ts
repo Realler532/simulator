@@ -70,6 +70,58 @@ export function useIncidentData() {
     return () => clearInterval(trafficInterval);
   }, [isMonitoring]);
 
+  // Simulate real-time threat detection
+  useEffect(() => {
+    if (!isMonitoring) return;
+
+    const threatInterval = setInterval(() => {
+      if (Math.random() < 0.6) { // 60% chance every 6 seconds
+        const newThreat = generateThreatDetection();
+        setThreatDetections(prev => [newThreat, ...prev].slice(0, 30));
+        
+        // Generate alert for high confidence threats
+        if (newThreat.confidence > 85) {
+          const alert: Alert = {
+            id: `ALT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date(),
+            message: `High confidence threat detected: ${newThreat.description}`,
+            type: 'critical',
+            acknowledged: false
+          };
+          setAlerts(prev => [alert, ...prev].slice(0, 20));
+        }
+      }
+    }, 6000);
+
+    return () => clearInterval(threatInterval);
+  }, [isMonitoring]);
+
+  // Simulate real-time anomaly detection
+  useEffect(() => {
+    if (!isMonitoring) return;
+
+    const anomalyInterval = setInterval(() => {
+      if (Math.random() < 0.4) { // 40% chance every 8 seconds
+        const newAnomaly = generateAnomalyDetection();
+        setAnomalies(prev => [newAnomaly, ...prev].slice(0, 20));
+        
+        // Generate alert for critical anomalies
+        if (newAnomaly.severity === 'critical' || newAnomaly.deviation > 300) {
+          const alert: Alert = {
+            id: `ALT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date(),
+            message: `Critical anomaly detected: ${newAnomaly.description}`,
+            type: 'error',
+            acknowledged: false
+          };
+          setAlerts(prev => [alert, ...prev].slice(0, 20));
+        }
+      }
+    }, 8000);
+
+    return () => clearInterval(anomalyInterval);
+  }, [isMonitoring]);
+
   // Update system status periodically
   useEffect(() => {
     if (!isMonitoring) return;
